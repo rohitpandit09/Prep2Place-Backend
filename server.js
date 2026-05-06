@@ -7,6 +7,7 @@ require('dotenv').config();
 // Importing routes
 
 const authRoutes = require('./src/routes/authRoutes');
+const roadmapRoutes = require('./src/routes/roadmapRoutes');
 
 app.use(cors());
 app.use(express.json());    
@@ -18,6 +19,7 @@ connectDB();
 // Routes
 
 app.use('/api/auth',authRoutes);
+app.use('/api/get',roadmapRoutes)
 
 
 // Server starting
