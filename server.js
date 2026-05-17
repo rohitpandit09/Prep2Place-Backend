@@ -8,7 +8,7 @@ require('dotenv').config();
 
 const authRoutes = require('./src/routes/authRoutes');
 const roadmapRoutes = require('./src/routes/roadmapRoutes');
-const practiceAIRoutes = require('./src/routes/practiceAIRoutes');
+
 
 app.use(cors());
 app.use(express.json());    
@@ -21,7 +21,7 @@ connectDB();
 
 app.use('/api/auth',authRoutes);
 app.use('/api/get',roadmapRoutes)
-app.use('/api/practice',practiceAIRoutes);
+
 
 
 // Server starting
