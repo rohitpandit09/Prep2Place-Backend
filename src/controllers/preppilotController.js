@@ -1,5 +1,8 @@
 const Questions = require('../models/Questions');
 const GroqAI = require('groq-sdk');
+const {DeepgramCilent} = require('@deepgram/sdk');
+const WebSocket = require('ws')
+const { createClient } = require("@deepgram/sdk");
 
 const groq = new GroqAI(
   process.env.GROQ_API_KEY
@@ -83,6 +86,92 @@ exports.generateQuestions = async (req,res) => {
     } catch(err){
         res.status(500).json({
             message : err.message || "Something went wrong while generating questions"
+        })
+    }
+}
+
+exports.answerByUser = async (req,res)=>{
+    
+    try{
+
+        const deepgramClient = createClient(process.env.DEEPGRAM_API_KEY);
+        
+        // Websocket server
+
+        const wss = new WebSocket.Server({ port: 8080 });
+
+        console.log("WebSocket server started on port 8080");
+
+        // Frontend connection
+
+        wss.on('connection',(cilentSocket)=>{
+
+            console.log("Client connected");
+
+            // deepgram connection
+
+            const dgConnection = deepgramClient.listen.live({
+                model : "nova-3",
+                smart_format : true,
+                punctuate : true,
+                interim_results : true
+            });
+
+            // deepgram connected
+
+            dgConnection.on('open',()=>{
+                console.log("Connected to deepgram");
+
+                // Audio taking from frontend
+
+                cilentSocket.on('message',(audioData)=>{
+                    if(dgConnection.getReadyState()===1){
+                        dg.Connection.send(audioData);
+                    }
+                });
+
+                // transcript received from deepgram
+
+                dgConnection.on(
+                    "transcript",
+                    (data) => {
+
+                        const transcript =
+                            data.channel
+                            .alternatives[0]
+                            .transcript;
+
+                        console.log(transcript);
+
+
+                        // Send transcript back
+                        clientSocket.send(
+                            JSON.stringify({
+                                transcript,
+                            })
+                        );
+                    }
+                );
+
+                // Disconnect
+                clientSocket.on("close", () => {
+
+                    console.log(
+                        "Frontend disconnected"
+                    );
+
+                    dgConnection.finish();
+                });
+            })
+
+        })
+
+    
+    }
+
+    catch(err){
+        res.status(500).json({
+            message : err.message || "Something went wrong while processing your answer"
         })
     }
 }
