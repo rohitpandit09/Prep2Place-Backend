@@ -58,6 +58,7 @@ exports.generateQuestions = async (req,res) => {
         });
 
         const questionsData = JSON.parse(response.choices[0].message.content);
+        const AIanswer = questionsData.questions.map(q=>q.AIanswer).join(" ");
 
         
         // storing in database
@@ -67,13 +68,15 @@ exports.generateQuestions = async (req,res) => {
             subtopic,
             numberOfQuestions,
             difficulty,
-            questions : questionsData.questions
+            questions : questionsData.questions,
+            AIanswer : AIanswer
+
         })
         
 
         res.status(201).json({
             message : "Questions generated successfully",
-            questions : newQuestions
+            questions : newQuestions.questions
         })
 
         
