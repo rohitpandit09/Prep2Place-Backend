@@ -8,6 +8,7 @@ require('dotenv').config();
 
 const authRoutes = require('./src/routes/authRoutes');
 const roadmapRoutes = require('./src/routes/roadmapRoutes');
+const questionGenerationRoutes = require('./src/routes/questionGenerationRoutes');
 
 
 app.use(cors());
@@ -20,8 +21,8 @@ connectDB();
 // Routes
 
 app.use('/api/auth',authRoutes);
-app.use('/api/get',roadmapRoutes)
-
+app.use('/api/get',roadmapRoutes);
+app.use('/api/questions',questionGenerationRoutes);
 
 
 // Server starting
